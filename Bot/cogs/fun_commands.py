@@ -29,11 +29,13 @@ class Fun(commands.Cog):
             data = response.json()
             meme_url = data[0]["data"]["children"][0]["data"]["url"]
             meme_title = data[0]["data"]["children"][0]["data"]["title"]
-            embed = discord.Embed(title=meme_title, color=discord.Color.random())
+            meme_data = data[0]["data"]["children"][0]["data"]
+            embed = discord.Embed(title=f"{meme_title}", color=discord.Color.random())
             embed.set_image(url=meme_url)
+            embed.set_author(name=meme_data["author"])
+            embed.set_footer(text=f"Reddit/{subreddit}")
 
             await interaction.response.send_message(
-                f"{subreddit}",
                 embed=embed,
             )
         except Exception as e:

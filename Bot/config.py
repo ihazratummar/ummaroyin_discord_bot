@@ -18,8 +18,8 @@ exts = [
     "cogs.images",
     "cogs.games",
     "cogs.welcomer",
-    # "cogs.Rewards.economy",
-    # "cogs.Automod.automod",
+    # "cogs.Rewards.level",
+    "cogs.Automod.automod"
 ]
 
 
