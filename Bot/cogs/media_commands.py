@@ -51,9 +51,9 @@ class Media_Commands(commands.Cog):
             )
 
     @app_commands.command(name= "images_search", description="search a images")
-    async def image_search(self, interaction : discord.Interaction, q:str):
+    async def image_search(self, interaction : discord.Interaction, topic:str):
         key = os.getenv("pixabay_API")
-        response = requests.get(f"https://pixabay.com/api/?key={key}&q={q}")
+        response = requests.get(f"https://pixabay.com/api/?key={key}&q={topic}")
 
         data = response.json()
 
@@ -66,7 +66,7 @@ class Media_Commands(commands.Cog):
         random_images = random.choice(images)
 
         embed = discord.Embed(
-            title=f"Your search result for {q}",
+            title=f"Your search result for {topic}",
             description= "",
             color= discord.Color.dark_embed()
         )
@@ -87,7 +87,7 @@ class Media_Commands(commands.Cog):
         await interaction.response.send_message(embed= embed, view= view)
 
     @app_commands.command(name="search_video", description="Search a video")
-    async def search_video(self,interaction: discord.Interaction, q: str):
+    async def search_video(self,interaction: discord.Interaction, topic: str):
         key = os.getenv("pixabay_API")
         if not key:
             await interaction.response.send_message("API key not found.")
@@ -96,7 +96,7 @@ class Media_Commands(commands.Cog):
         # Defer the response to give more time for processing
         await interaction.response.defer()
 
-        response = requests.get(f"https://pixabay.com/api/videos/?key={key}&q={q}")
+        response = requests.get(f"https://pixabay.com/api/videos/?key={key}&q={topic}")
         if response.status_code != 200:
             await interaction.followup.send("Failed to fetch data from Pixabay.")
             return
@@ -137,12 +137,12 @@ class Media_Commands(commands.Cog):
                 temp_video_path = temp_video.name
 
             # Log the temporary file path for debugging
-            print(f"Temporary video file path: {temp_video_path}")
+            # print(f"Temporary video file path: {temp_video_path}")
 
             file = discord.File(temp_video_path, filename="search_video.mp4")
 
             embed = discord.Embed(
-                title=f"Your search result for {q}",
+                title=f"Your search result for {topic}",
                 description="Here is the video you searched for!",
                 color=discord.Color.dark_embed()
             )
