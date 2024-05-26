@@ -15,7 +15,7 @@ exts = [
     "cogs.error",
     "cogs.general",
     "cogs.fun_commands",
-    "cogs.images",
+    "cogs.media_commands",
     "cogs.games",
     "cogs.welcomer",
     # "cogs.Rewards.level",
