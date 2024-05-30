@@ -30,7 +30,7 @@ class Fun(commands.Cog):
             meme_url = data[0]["data"]["children"][0]["data"]["url"]
             meme_title = data[0]["data"]["children"][0]["data"]["title"]
             meme_data = data[0]["data"]["children"][0]["data"]
-            embed = discord.Embed(title=f"{meme_title}", color=discord.Color.random())
+            embed = discord.Embed(title=f"{meme_title}", color=0x00FFFF)
             embed.set_image(url=meme_url)
             embed.set_author(name=meme_data["author"])
             embed.set_footer(text=f"Reddit/{subreddit}")

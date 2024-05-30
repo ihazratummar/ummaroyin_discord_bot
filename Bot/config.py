@@ -5,6 +5,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 from discord import Activity, ActivityType
+import datetime, time
 
 # endregion
 
@@ -19,7 +20,8 @@ exts = [
     "cogs.games",
     "cogs.welcomer",
     # "cogs.Rewards.level",
-    "cogs.Automod.automod"
+    "cogs.Automod.automod",
+    "cogs.Utility.utility_commands"
 ]
 
 
@@ -32,6 +34,7 @@ class Bot(commands.Bot):
             await self.load_extension(ext)
         print("loaded all cogs")
 
+
         synced = await self.tree.sync()
         print(f"Synced {len(synced)} commands(s)")
         print("Bot is ready.")
@@ -42,5 +45,5 @@ class Bot(commands.Bot):
 
 
 if __name__ == "__main__":
-    bot = Bot(command_prefix=".", intents=discord.Intents.all())
+    bot = Bot(command_prefix=".", intents=discord.Intents.all(), help_command = None)
     bot.run(token)

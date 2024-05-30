@@ -47,6 +47,14 @@ class Games(commands.Cog):
                 return await ctx.send(
                     f"Time's Up! You didn't guess the number in time. The number was {number}."
                 )
+            
+    @commands.hybrid_command(name="flip", description="flip a coin")
+    async def flip(self, interaction: commands.Context):
+        random_side = random.randint(0, 1)
+        if random_side == 1:
+            await interaction.send("Head")
+        else:
+            await interaction.response.send_message("Tail")
 
 
 async def setup(bot: commands.Bot):

@@ -36,7 +36,7 @@ class Welcomer(commands.Cog):
         embed = discord.Embed(
             title=f"Welcome to {member.guild.name}!",
             description=f"Hi {member.mention}, Welcome to our Discord server! We're excited to have you join our community. Feel free to introduce yourself and get to know each other.",
-            color=discord.Color.green(),
+            color=0x00FFFF,
         )
         embed.set_thumbnail(url=member.avatar.url)
         embed.set_image(

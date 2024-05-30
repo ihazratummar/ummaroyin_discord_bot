@@ -37,7 +37,7 @@ class Media_Commands(commands.Cog):
                 image_url = random.choice(random_image["images"])["link"]
 
                 embed = discord.Embed(
-                    title=f'Results for **{query}**', color=discord.Color.blue()
+                    title=f'Results for **{query}**', color= 0x00FFFF
                 )
                 embed.set_image(url=image_url)
                 await interaction.response.send_message(embed=embed)
@@ -68,7 +68,7 @@ class Media_Commands(commands.Cog):
         embed = discord.Embed(
             title=f"Your search result for {topic}",
             description= "",
-            color= discord.Color.dark_embed()
+            color= 0x00FFFF
         )
         embed.add_field(name="Likes", value=random_images["likes"])
         embed.add_field(name="Downloads", value=random_images["downloads"])
@@ -144,7 +144,7 @@ class Media_Commands(commands.Cog):
             embed = discord.Embed(
                 title=f"Your search result for {topic}",
                 description="Here is the video you searched for!",
-                color=discord.Color.dark_embed()
+                color=0x00FFFF
             )
             embed.add_field(name="Likes", value=random_video["likes"])
             embed.add_field(name="Downloads", value=random_video["downloads"])
