@@ -4,6 +4,8 @@ from config import Bot
 from discord import app_commands
 import datetime, time
 import asyncio
+import requests
+
 
 
 class Utility(commands.Cog):
@@ -99,8 +101,6 @@ class Utility(commands.Cog):
 
     @commands.hybrid_command(name="reminder", case_insensitive=True, aliases=['reminde', 'remindme'])
     async def reminder(self, ctx: commands.Context, time, *, reminder: str = None):
-        print(time)
-        print(reminder)
 
         embed = discord.Embed(title=f"Reminder for {ctx.author.name}", description="", color=0x00FFFF)
         seconds = 0
@@ -124,8 +124,8 @@ class Utility(commands.Cog):
                 seconds += int(time[:-1])
                 counter = f"{seconds} seconds"
             else:
-                embed.add_field(name="Error", value="Invalid time format! Please use '1d' for days, '1h' for hours, '1m' for minutes, or '1s' for seconds.")
-                await ctx.send(embed=embed)
+                embed.add_field(name="Error", value="> **Invalid time format**! Please use `'1d'` for days, `'1h'` for hours, `'1m'` for minutes, or `'1s'` for seconds.")
+                await ctx.send(embed=embed, ephemeral=True)
                 return
 
             if seconds == 0:
@@ -135,14 +135,38 @@ class Utility(commands.Cog):
             elif seconds > 7776000:  # 90 days
                 embed.add_field(name="Warning", value="Duration is too long. Maximum is 90 days.")
             else:
-                await ctx.send(f"> Alright, I will remind you about {reminder} in {counter}.")
+                embed.add_field(name="Reminder Created",value=f"> Alright, I will remind you about {reminder} in {counter}.")
+                await ctx.send(embed=embed)
                 await asyncio.sleep(seconds)
-                await ctx.send(f"Hi{ctx.author.mention}, you asked me to remind you about {reminder} {counter} ago.")
+                reminder_embed = discord.Embed(title=f"Reminder for {ctx.author.name}", color=0x00FFFF)
+                reminder_embed.add_field(name="Reminder",value=f"Hi{ctx.author.mention}, you asked me to remind you about {reminder} {counter} ago.")
+                await ctx.send( f"{ctx.author.mention}" ,embed=reminder_embed)
                 return
 
         except ValueError:
-            embed.add_field(name="Error", value="Invalid time format! Please provide a valid number. Ex:'1d', '1h', '1m', or '1s'.")
+            embed.add_field(name="Error", value="> **Invalid time format**! Please provide a valid number. Ex:`'1d'`, `'1h'`, `'1m'`, or `'1s'`.")
         
+        await ctx.send(embed=embed, ephemeral=True)
+
+
+    @commands.hybrid_command(name="quota", description="Display quota")
+    async def quota(self, interaction: commands.Context):
+        responses = requests.get("https://api.quotable.io/random")
+        data = responses.json()
+        quota = data["content"]
+        author = data["author"]
+        await interaction.send(f"{author}:\n\n━━━━{quota}")
+
+
+    @commands.hybrid_command(name="emojis", description="Displays all the emojis in the server.")
+    async def emojis(self, ctx: commands.Context):
+        emojis = ctx.guild.emojis
+        if not emojis:
+            await ctx.send("This server has no custom emojis.")
+            return
+
+        emoji_list = " ".join(str(emoji) for emoji in emojis)
+        embed = discord.Embed(title=f"Emojis in {ctx.guild.name}", description=emoji_list, color=0x00FFFF)
         await ctx.send(embed=embed)
 
 async def setup(bot: commands.Bot):

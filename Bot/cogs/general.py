@@ -22,17 +22,6 @@ class General(commands.Cog):
     async def hi(self, interaction: commands.Context):
         await interaction.send(f"Hi how are you")
 
-    
-
-    @commands.hybrid_command(name="quota", description="Display quota")
-    async def quota(self, interaction: commands.Context):
-        responses = requests.get("https://api.quotable.io/random")
-        data = responses.json()
-        quota = data["content"]
-        author = data["author"]
-        await interaction.send(f"{author}:\n\n━━━━{quota}")
-
-
     @commands.hybrid_command(
         name="whatsapp", description="whatsapp  group daily stream notification"
     )
