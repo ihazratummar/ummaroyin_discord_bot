@@ -96,6 +96,55 @@ class Utility(commands.Cog):
         embed.set_thumbnail(url=f"{ctx.guild.icon._url}")
         await ctx.send(embed=embed)
 
+
+    @commands.hybrid_command(name="reminder", case_insensitive=True, aliases=['reminde', 'remindme'])
+    async def reminder(self, ctx: commands.Context, time, *, reminder: str = None):
+        print(time)
+        print(reminder)
+
+        embed = discord.Embed(title=f"Reminder for {ctx.author.name}", description="", color=0x00FFFF)
+        seconds = 0
+
+        if reminder is None:
+            embed.add_field(name="Warning", value="Your reminder message is empty!")
+            await ctx.send(embed=embed)
+            return
+
+        try:
+            if time.lower().endswith("d"):
+                seconds += int(time[:-1]) * 60 * 60 * 24
+                counter = f"{seconds // 60 // 60 // 24} days"
+            elif time.lower().endswith("h"):
+                seconds += int(time[:-1]) * 60 * 60
+                counter = f"{seconds // 60 // 60} hours"
+            elif time.lower().endswith("m"):
+                seconds += int(time[:-1]) * 60
+                counter = f"{seconds // 60} minutes"
+            elif time.lower().endswith("s"):
+                seconds += int(time[:-1])
+                counter = f"{seconds} seconds"
+            else:
+                embed.add_field(name="Error", value="Invalid time format! Please use '1d' for days, '1h' for hours, '1m' for minutes, or '1s' for seconds.")
+                await ctx.send(embed=embed)
+                return
+
+            if seconds == 0:
+                embed.add_field(name="Warning", value="Please provide a proper duration.")
+            elif seconds < 5:
+                embed.add_field(name="Warning", value="Duration is too short. Minimum is 5 seconds.")
+            elif seconds > 7776000:  # 90 days
+                embed.add_field(name="Warning", value="Duration is too long. Maximum is 90 days.")
+            else:
+                await ctx.send(f"> Alright, I will remind you about {reminder} in {counter}.")
+                await asyncio.sleep(seconds)
+                await ctx.send(f"Hi{ctx.author.mention}, you asked me to remind you about {reminder} {counter} ago.")
+                return
+
+        except ValueError:
+            embed.add_field(name="Error", value="Invalid time format! Please provide a valid number. Ex:'1d', '1h', '1m', or '1s'.")
+        
+        await ctx.send(embed=embed)
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(Utility(bot))
         
