@@ -72,6 +72,29 @@ class Utility(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.hybrid_command(name="avatar", description = "Display a User's Avatar")
+    async def avatar(self, ctx: commands.Context, user:discord.Member = None):
+        if user is None:
+            user = ctx.author
+        
+        embed=discord.Embed(title=f"{user.name}", description=f"[Avatar URL]({user.avatar.url})", color=0x00FFFF)
+        embed.set_image(url=f"{user.avatar._url}")
+        await ctx.send(embed=embed)
+
+    @commands.hybrid_command(name= "channelinfo")
+    async def channelinfo(self, ctx: commands.Context, * ,channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
+        embed=discord.Embed(title=f"Channel Info: {channel.name}",color=0x00FFFF)
+        embed.add_field(name=f"Channel Name", value=f"<#{channel.id}>", inline=False)
+        embed.add_field(name="Channel Topic", value=f"{channel.topic if channel.topic else 'No Topic Set'}", inline= False),
+        embed.add_field(name="Channel Category", value=f"{channel.category.name if channel.category else 'No categoty'}", inline= False)
+        embed.add_field(name="Position", value=f"{channel.position}", inline=True)
+        embed.add_field(name='NSFW', value=f"{channel.is_nsfw()}", inline=True),
+        embed.add_field(name="NEWS", value=f"{channel.is_news()}", inline= True)
+        embed.set_footer(text=f"ID: {channel.id} | Created At : {channel.created_at.strftime('%A, %d %B %Y %H:%M')}"),
+        embed.set_thumbnail(url=f"{ctx.guild.icon._url}")
+        await ctx.send(embed=embed)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Utility(bot))
