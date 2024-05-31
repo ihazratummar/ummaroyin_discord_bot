@@ -48,13 +48,18 @@ class Utility(commands.Cog):
         embed.add_field(name="🎑Total Voice Channels", value=f"{len(ctx.guild.voice_channels)}", inline=True)
         embed.add_field(name="🎐Total Roles", value=f"{len(ctx.guild.roles)}", inline=True)
         embed.set_thumbnail(url= ctx.guild.icon._url)
-        embed.set_footer(text= f"ID: {ctx.guild.id} | Server Created - {ctx.guild.created_at}")
+        embed.set_footer(text= f"ID: {ctx.guild.id} | Server Created - {ctx.guild.created_at.strftime('%A, %d %B %Y %H:%M')}")
+
+        if ctx.guild.banner:
+            embed.set_image(url= ctx.guild.banner.url)
         await ctx.send(embed=embed)
 
     @commands.hybrid_command(name="userinfo", description= "Display a user's info")
     async def userinfo(self, ctx: commands.Context, * , user: discord.Member = None):
         if user is None:
             user = ctx.author
+
+        full_user = await self.bot.fetch_user(user.id)
 
             # Format the datetime objects
         account_created = user.created_at.strftime("%A, %d %B %Y %H:%M")
@@ -65,13 +70,15 @@ class Utility(commands.Cog):
         embed.add_field(name="", value=f"", inline=True)
         embed.add_field(name="Account Created", value= f"> `{account_created}`" ,inline= False)
         embed.add_field(name="Server joining Date", value=f"> `{server_joining_date}`", inline=False)
-
+        embed.set_image
         if len(user.roles) >1:
             role_string = '  '.join([r.mention for r in user.roles][1:])
             embed.add_field(name= "Roles[{}]".format(len(user.roles)-1), value=f"{role_string}", inline= False)
         embed.set_author(name=f"{user.name}", icon_url=f"{user.avatar._url}")
         embed.set_thumbnail(url=f"{user.avatar._url}")
 
+        if full_user.banner:
+            embed.set_image(url=full_user.banner.url)
         await ctx.send(embed=embed)
 
     @commands.hybrid_command(name="avatar", description = "Display a User's Avatar")
@@ -168,6 +175,13 @@ class Utility(commands.Cog):
         emoji_list = " ".join(str(emoji) for emoji in emojis)
         embed = discord.Embed(title=f"Emojis in {ctx.guild.name}", description=emoji_list, color=0x00FFFF)
         await ctx.send(embed=embed)
+
+
+    @commands.hybrid_command(name="clear")
+    @commands.has_permissions(manage_messages = True)
+    async def clear(self, ctx: commands.Context, number: int = 20):
+        deleted = await ctx.channel.purge(limit= number +2)
+        await ctx.send(f"Deleted {len(deleted)-2} messages.", delete_after=5, ephemeral= True)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Utility(bot))
