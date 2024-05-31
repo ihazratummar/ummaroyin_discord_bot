@@ -2,9 +2,14 @@ import discord
 from discord.ext import commands
 from config import Bot
 from discord import app_commands
+from dotenv import load_dotenv
 import datetime, time
 import asyncio
 import requests
+import random
+import os
+
+load_dotenv()
 
 
 
@@ -182,6 +187,100 @@ class Utility(commands.Cog):
     async def clear(self, ctx: commands.Context, number: int = 20):
         deleted = await ctx.channel.purge(limit= number +2)
         await ctx.send(f"Deleted {len(deleted)-2} messages.", delete_after=5, ephemeral= True)
+
+
+    @commands.hybrid_command(name="urban", description = "Get the definition of a term(word) from Urban Dictionary.")
+    async def urbun(self, ctx:commands.Context, *, word:str):
+        response = requests.get(f"http://api.urbandictionary.com/v0/define?term={word}")
+        data = response.json()
+
+        result = [item for item in data["list"]]
+        random_choice = random.choice(result)
+
+        embed = discord.Embed(title=f"{word.capitalize()}", description= None ,color= 0x00FFFF)
+        embed.add_field(name="Definition", value=f">>> {random_choice["definition"]}", inline= False)
+        embed.add_field(name="Example", value=f"{random_choice["example"]}", inline= False)
+        embed.add_field(name=f"🖒 {random_choice["thumbs_up"]}", value="", inline=True)
+        embed.add_field(name=f"🖓 {random_choice["thumbs_down"]}", value="", inline=True)
+        embed.set_footer(text=f"{random_choice["written_on"]}")
+        embed.set_author(name=f"Author: {random_choice["author"]}")
+
+        button = discord.ui.Button(
+            label= "Check Out",
+            url= random_choice["permalink"],
+            style= discord.ButtonStyle.link
+        )
+
+        view = discord.ui.View()
+        view.add_item(button)
+
+        await ctx.send(embed=embed, view= view)
+
+    @commands.hybrid_command(name="antonym", description="Provides antonyms for the specified word.")
+    async def antonym(self, ctx: commands.Context, word: str):
+        api_url = f'https://api.api-ninjas.com/v1/thesaurus?word={word}'
+        api_key = os.getenv("API_NINJA")
+
+        # Check if API key is available
+        if not api_key:
+            await ctx.send("API key is not set. Please configure the API key.")
+            return
+
+        response = requests.get(api_url, headers={'X-Api-Key': api_key})
+
+        if response.status_code == 200:
+            data = response.json()
+            antonyms = data.get("antonyms", [])
+            if antonyms:
+                antonyms_list = ' | '.join(antonyms).capitalize()
+                
+                embed = discord.Embed(title=f"{word.capitalize()}", description=None, color=0x00FFFF)
+                
+                # Ensure the antonyms list is split correctly if it exceeds 1024 characters
+                max_length = 1024 - 4  # account for the '>>>' formatting
+                antonym_chunks = [antonyms_list[i:i+max_length] for i in range(0, len(antonyms_list), max_length)]
+                
+                for i, chunk in enumerate(antonym_chunks):
+                    embed.add_field(name=f"Antonyms (Part {i+1})", value=f">>> {chunk}", inline=False)
+                
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"No antonyms found for '{word}'.")
+        else:
+            await ctx.send(f"Error: {response.status_code}")
+
+    @commands.hybrid_command(name="synonym", description="Provides synonyms for the specified word")
+    async def synonym(self, ctx: commands.Context, word: str):
+        api_url = f'https://api.api-ninjas.com/v1/thesaurus?word={word}'
+        api_key = os.getenv("API_NINJA")
+
+        # Check if API key is available
+        if not api_key:
+            await ctx.send("API key is not set. Please configure the API key.")
+            return
+
+        response = requests.get(api_url, headers={'X-Api-Key': api_key})
+
+        if response.status_code == 200:
+            data = response.json()
+            antonyms = data.get("synonyms", [])
+            if antonyms:
+                antonyms_list = ' | '.join(antonyms).capitalize()
+                
+                embed = discord.Embed(title=f"{word.capitalize()}", description=None, color=0x00FFFF)
+                
+                # Ensure the antonyms list is split correctly if it exceeds 1024 characters
+                max_length = 1024 - 4  # account for the '>>>' formatting
+                antonym_chunks = [antonyms_list[i:i+max_length] for i in range(0, len(antonyms_list), max_length)]
+                
+                for i, chunk in enumerate(antonym_chunks):
+                    embed.add_field(name=f"Antonyms (Part {i+1})", value=f">>> {chunk}", inline=False)
+                
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"No antonyms found for '{word}'.")
+        else:
+            await ctx.send(f"Error: {response.status_code}")
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Utility(bot))
