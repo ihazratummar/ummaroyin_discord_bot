@@ -1,9 +1,7 @@
 import discord
 from discord.ext import commands
 from config import Bot
-from discord import app_commands
 from dotenv import load_dotenv
-import datetime, time
 import asyncio
 import requests
 import random

@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from config import Bot
 import requests
-import asyncpraw
+import asyncio
 import random
 
 
@@ -11,8 +11,8 @@ class Fun(commands.Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    @app_commands.command(name="meme", description="get a random meme")
-    async def meme(self, interaction: discord.Interaction):
+    @commands.hybrid_command(name="meme", description="get a random meme")
+    async def meme(self, interaction: commands.Context):
         try:
             subreddits = [
                 "memes",
@@ -35,12 +35,25 @@ class Fun(commands.Cog):
             embed.set_author(name=meme_data["author"])
             embed.set_footer(text=f"Reddit/{subreddit}")
 
-            await interaction.response.send_message(
+            await interaction.send(
                 embed=embed,
             )
         except Exception as e:
             print(f"Error retrieving meme: {e}")
-            await interaction.response.send_message("sorry, i couldn't find")
+            await interaction.send("sorry, i couldn't find")
+
+
+    @commands.hybrid_command(name="joke", descriptio = "Tells a random joke.")
+    async def joke(self, ctx: commands.Context):
+        url = "https://official-joke-api.appspot.com/random_joke"
+        response = requests.get(url)
+        data = response.json()
+        setup = data["setup"]
+        paunch_line = data["punchline"]
+
+        await ctx.send(setup)
+        await asyncio.sleep(3)
+        await ctx.send(paunch_line)
 
 
 async def setup(bot: commands.Bot):
