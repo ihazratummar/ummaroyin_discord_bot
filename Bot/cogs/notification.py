@@ -41,7 +41,7 @@ class Notification(commands.Cog):
         with open(FOLLOWERS_FILE, 'w') as f:
             json.dump(followers, f)
 
-    @tasks.loop(minutes=10)
+    @tasks.loop(seconds=10)
     async def check_new_followers(self):
         current_followers = self.fetch_followers()
         if not current_followers:
