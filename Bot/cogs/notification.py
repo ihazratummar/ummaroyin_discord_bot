@@ -58,6 +58,7 @@ class Notification(commands.Cog):
                     embed.add_field(name="Name", value=follower['name'], inline=False)
                     embed.add_field(name="Username", value=follower['username'], inline=False)
                     embed.set_thumbnail(url=follower['profile_image'])
+                    embed.set_footer(text=follower['created_at'])
                     await channel.send(embed=embed)
             else:
                 logging.error("Channel not found!")
