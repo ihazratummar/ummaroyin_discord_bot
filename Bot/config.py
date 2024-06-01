@@ -21,7 +21,8 @@ exts = [
     "cogs.welcomer",
     # "cogs.Rewards.level",
     "cogs.Automod.automod",
-    "cogs.Utility.utility_commands"
+    "cogs.Utility.utility_commands",
+    "cogs.notification"
 ]
 
 
