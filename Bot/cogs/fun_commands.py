@@ -104,6 +104,56 @@ class Fun(commands.Cog):
         embed.add_field(name="Type", value=f"{type_text}", inline= True)
         embed.set_image(url=f"{pokemon_image}")
         await ctx.send(embed=embed)
-    
+
+
+    @commands.hybrid_command(name="cat", description = "Get a random cat image with description")
+    @commands.cooldown(4, 20, commands.BucketType.guild)
+    async def cat(self, ctx: commands.Context, user: discord.Member = None):
+        api_key = os.getenv("CAT_API_KEY")
+        url = "https://api.thecatapi.com/v1/images/search?has_breeds=1"
+        reponse = requests.get(url, headers={'x-api-key': f"{api_key}"})
+
+        data = reponse.json()
+
+        breed = [breed['breeds'] for breed in data]
+        image = [image['url'] for image in data]
+        cat = breed[0][0]
+        cat_name = cat['name']
+        cat_description = cat['description']
+        cat_temperament = cat['temperament']
+
+        embed=discord.Embed(title=f"{cat_name}", description=f">>> {cat_description}", color=0x00FFFF)
+        embed.add_field(name="Temperament", value=f">>> {cat_temperament}", inline=False)
+        embed.set_image(url=f"{image[0]}")
+
+        if user:
+            await ctx.send(user.mention,embed=embed)
+        else:
+            await ctx.send(embed=embed)
+
+    @commands.hybrid_command(name="dog", description = "Get a random cat image with description")
+    @commands.cooldown(4, 20, commands.BucketType.guild)
+    async def dog(self, ctx: commands.Context, user: discord.Member = None):
+        api_key = os.getenv("DOG_API_KEY")
+        url = "https://api.thedogapi.com/v1/images/search?has_breeds=1"
+        reponse = requests.get(url, headers={'x-api-key': f"{api_key}"})
+
+        data = reponse.json()
+
+        breed = [breed['breeds'] for breed in data]
+        image = [image['url'] for image in data]
+        dog = breed[0][0]
+        dog_name = dog['name']
+        dog_temperament = dog['temperament'] 
+
+        embed=discord.Embed(title=f"{dog_name}", description= None ,color=0x00FFFF)
+        embed.add_field(name="Temperament", value=f">>> {dog_temperament}", inline=False)
+        embed.set_image(url=f"{image[0]}")
+
+        if user:
+            await ctx.send(user.mention,embed=embed)
+        else:
+            await ctx.send(embed=embed)
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(Fun(bot))

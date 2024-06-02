@@ -51,7 +51,7 @@ class Notification(commands.Cog):
         new_followers = [follower for follower in current_followers if follower not in self.previous_followers]
         channel = os.getenv("DEV_NOTIFICATION_CHANNEL")
         if new_followers:
-            channel = self.bot.get_channel(channel)
+            channel = self.bot.get_channel(int(channel))
             if channel:
                 for follower in new_followers:
                     embed = discord.Embed(title="New Follower!", description=None, color=0x00FFFF)
