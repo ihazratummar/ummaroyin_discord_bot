@@ -10,7 +10,7 @@ class Games(commands.Cog):
     def __init__(self, bot: config.Bot):
         self.bot = bot
 
-    @commands.command(name="guess_number", description="Guess the number")
+    @commands.hybrid_command(name="guess_number", description="Guess the number")
     async def guess_number(self, ctx: commands.Context):
         number = random.randint(1, 20)
         await ctx.send(
