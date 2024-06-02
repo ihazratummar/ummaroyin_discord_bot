@@ -155,5 +155,25 @@ class Fun(commands.Cog):
         else:
             await ctx.send(embed=embed)
 
+    @commands.hybrid_command(name="fact", description = "Get a random fact")
+    @commands.cooldown(5, 10, commands.BucketType.user)
+    async def fact(self, ctx: commands.Context, user: discord.Member = None):
+        api_key = os.getenv("API_NINJA")
+        url = "https://api.api-ninjas.com/v1/facts"
+        response = requests.get(url, headers={'X-Api-Key':f'{api_key}'})
+        if response.status_code != 200:
+            await ctx.send("Connection Failed")
+        
+        data =response.json()
+        fact = [fact['fact'] for fact in data][0]
+        embed=discord.Embed(title=f"Fact", description= None, color=0x00FFFF)
+        embed.add_field(name=f">>> {fact}", value=" ", inline=False)
+        
+        if user:
+            await ctx.send(user.mention,embed=embed)
+        else:
+            await ctx.send(embed=embed)
+
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(Fun(bot))
