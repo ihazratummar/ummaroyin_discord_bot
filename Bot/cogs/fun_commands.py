@@ -7,6 +7,7 @@ import asyncio
 import random
 from dotenv import load_dotenv
 import os
+import json
 
 
 load_dotenv()
@@ -174,6 +175,30 @@ class Fun(commands.Cog):
         else:
             await ctx.send(embed=embed)
 
+
+    @commands.hybrid_command(name="roast", description = "Roast your friend")
+    @commands.cooldown(4,10, commands.BucketType.user)
+    async def roast(self, ctx: commands.Context , user: discord.Member):
+
+        with open("data/roasts.json", 'r') as file:
+            roast_data = json.load(file)
+
+        random_roast = random.choice(roast_data['roasts'])
+        embed=discord.Embed(title=f"Roasted 🫨", description=None, color=0x00FFFF)
+        embed.add_field(name=f"{random_roast}", value="", inline=False)
+        await ctx.send(user.mention, embed= embed)
+
+    @commands.hybrid_command(name="insult", description = "Insult your friend")
+    @commands.cooldown(2,10, commands.BucketType.user)
+    async def insult(self, ctx: commands.Context , user: discord.Member):
+        response = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=json")
+        data = response.json()
+        insult = data['insult']
+        embed=discord.Embed(title=f"Insulted 🫣", description=None, color=0x00FFFF)
+        embed.add_field(name=f"{insult}", value="", inline=False)
+        await ctx.send(user.mention, embed= embed)
+
+    
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Fun(bot))
