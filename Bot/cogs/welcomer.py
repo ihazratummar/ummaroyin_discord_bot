@@ -7,7 +7,7 @@ import os
 
 
 class Welcomer(commands.Cog):
-    def __init__(self, bot: config.Bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.Cog.listener()
@@ -104,19 +104,37 @@ class Welcomer(commands.Cog):
         if role:
             await member.add_roles(role)
 
+
+        with open("data/invite.json", "r") as f:
+            records = json.load(f)
+        try:
+            channel_id = records[str(member.guild.id)]
+        except KeyError:
+            return
+        invite_channel = self.bot.get_channel(int(channel_id))
+        if not invite_channel:
+            return
+        
+        inviter = None
+        async for entry in member.guild.audit_logs(limit=1):
+            if entry.action == discord.AuditLogAction.invite_create:
+                inviter = entry.user
+                break
+        await invite_channel.send(f"{member.mention} Invited By {inviter}")
+
     ## Setup welcome channel
-    @app_commands.command()
-    @app_commands.checks.has_permissions(administrator=True)
-    async def welcome(self, interaction: discord.Interaction):
+    @commands.hybrid_command()
+    @commands.has_permissions(administrator=True)
+    async def welcome(self, ctx: commands.Context):
         with open("data/welcome.json", "r") as f:
             records = json.load(f)
 
-        records[str(interaction.guild_id)] = str(interaction.channel_id)
+        records[str(ctx.guild.id)] = str(ctx.channel.id)
         with open("data/welcome.json", "w") as f:
             json.dump(records, f)
 
-        await interaction.response.send_message(
-            f"Successfully {interaction.channel.mention} is your welcome channel."
+        await ctx.send(
+            f"Successfully {ctx.channel.mention} is your welcome channel."
         )
 
     @commands.Cog.listener()
@@ -126,6 +144,18 @@ class Welcomer(commands.Cog):
         if boost_channel:
             message = (f"Thank you for boosting, {booster.mention}",)
         await boost_channel.send_message(message)
+
+    @commands.hybrid_command(name="setinvite")
+    @commands.has_permissions(administrator = True)
+    async def setInvite(self, ctx: commands.Context):
+        with open("data/invite.json", "r") as file:
+            record = json.load(file)
+
+        record[str(ctx.guild.id)] = f"{ctx.channel.id}"
+        with open("data/invite.json", "w") as file:
+            json.dump(record, file)
+
+        await ctx.send("Set invite log successful")
 
 
 async def setup(bot: commands.Bot):
