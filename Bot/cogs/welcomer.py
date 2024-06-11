@@ -22,26 +22,24 @@ class Welcomer(commands.Cog):
             second_role = member.guild.get_role(second_role_id)
             if second_role:
                 await member.add_roles(second_role)
-
-        with open("data/welcome.json", "r") as f:
-            records = json.load(f)
+        
         try:
-            channel_id = records[str(member.guild.id)]
-        except KeyError:
+            with open("data/welcome.json", "r") as f:
+                records = json.load(f)
+            welcome_data = records[str(member.guild.id)]
+        except (FileNotFoundError, KeyError):
             return
+        channel_id = welcome_data["channel_id"]
         channel = self.bot.get_channel(int(channel_id))
-        if not channel:
-            return
-
         embed = discord.Embed(
-            title=f"Welcome to {member.guild.name}!",
-            description=f"Hi {member.mention}, Welcome to our Discord server! We're excited to have you join our community. Feel free to introduce yourself and get to know each other.",
+            title=f"{welcome_data['guild_name']}",
+            description=welcome_data['description'].format(member = member),
             color=0x00FFFF,
         )
         embed.set_thumbnail(url=member.avatar.url)
         embed.set_image(
-            url="https://i.gifer.com/DbRQ.gif"
-        )  # Replace with your own image URL if desired
+            url=f"{welcome_data['image']}"
+        )  
 
         channel_fields = [
             "📣｜sᴇʀᴠᴇʀ-ʀᴜʟᴇs",
@@ -125,11 +123,20 @@ class Welcomer(commands.Cog):
     ## Setup welcome channel
     @commands.hybrid_command()
     @commands.has_permissions(administrator=True)
-    async def welcome(self, ctx: commands.Context):
+    async def welcome(self, ctx: commands.Context, 
+                        title: str = None, 
+                        description:str =None,
+                        image: str = None ):
         with open("data/welcome.json", "r") as f:
             records = json.load(f)
 
-        records[str(ctx.guild.id)] = str(ctx.channel.id)
+        records[str(ctx.guild.id)] = {
+            "guild_name" : str(ctx.guild.name),
+            "channel_id": str(ctx.channel.id),
+            "title": title,
+            "description": description,
+            "image": image
+        }
         with open("data/welcome.json", "w") as f:
             json.dump(records, f)
 
@@ -151,7 +158,7 @@ class Welcomer(commands.Cog):
         with open("data/invite.json", "r") as file:
             record = json.load(file)
 
-        record[str(ctx.guild.id)] = f"{ctx.channel.id}"
+        record[str(ctx.guild.id)] = str(ctx.channel.id)
         with open("data/invite.json", "w") as file:
             json.dump(record, file)
 
