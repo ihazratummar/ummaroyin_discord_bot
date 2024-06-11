@@ -32,14 +32,16 @@ class Welcomer(commands.Cog):
         channel_id = welcome_data["channel_id"]
         channel = self.bot.get_channel(int(channel_id))
         embed = discord.Embed(
-            title=f"{welcome_data['guild_name']}",
-            description=welcome_data['description'].format(member = member),
+            title=welcome_data['title'].format(member = member) if 'title' in welcome_data and welcome_data['title'] else f"Welcome to {member.guild.name}",
+            description=welcome_data['description'].format(member = member) if 'description' in welcome_data and welcome_data['description'] else f"Hi {member.mention} welcome to your discord server. Enjoy your stay. ",
             color=0x00FFFF,
         )
         embed.set_thumbnail(url=member.avatar.url)
-        embed.set_image(
-            url=f"{welcome_data['image']}"
-        )  
+        if welcome_data['image']:
+            embed.set_image(
+                url=f"{welcome_data['image']}"
+            )  
+        
 
         channel_fields = [
             "📣｜sᴇʀᴠᴇʀ-ʀᴜʟᴇs",

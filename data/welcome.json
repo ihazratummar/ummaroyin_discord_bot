@@ -6,5 +6,12 @@
         "description": "{member.mention}",
         "image": "https://images-ext-1.discordapp.net/external/fxVYMyiOdNQ_1VJryMgzT6xQtjY7FSnrW0icgbbVWVA/https/i.gifer.com/DbRQ.gif"
     },
-    "490603239969128458": "1121451867071860779"
+    "490603239969128458": "1121451867071860779",
+    "1126486185947189318": {
+        "guild_name": "Bot Testing",
+        "channel_id": "1126486188350525472",
+        "title": null,
+        "description": null,
+        "image": null
+    }
 }
